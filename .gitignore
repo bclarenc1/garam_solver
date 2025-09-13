@@ -1,0 +1,10 @@
+.env
+.envrc
+.python-version
+Dockerfile
+img/icon_thinking.png
+
+__pycache__/
+notebooks/
+tests/
+solver.egg-info/
