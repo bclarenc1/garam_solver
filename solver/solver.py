@@ -2,17 +2,18 @@
 # pylint: disable=useless-return   # explicit is better than implicit
 # pylint: disable=too-many-locals  # I have no choice
 
-"""Methods for solving cycles and grid"""
+"""Methods for solving cycles and gridss"""
 
 
+from typing import List
 from z3 import Int, Solver, sat
 
 VALID_OPES = ["+", "-", "*"]
 
-def add_expression_constraint(digits, op, solver):
+def add_expression_constraint(digits: List, op: str, solver: Solver) -> None:
     """Create a constraint on an expression.
-    The expression is either "a @ b = c" or "a @ b = cd",
-    where @ is the operator and cd is a 2-digit int.
+    The expression is either "a $ b = c" or "a $ b = cd",
+    where $ is the operator and cd is a 2-digit int.
 
     Inputs
     ------
@@ -34,8 +35,8 @@ def add_expression_constraint(digits, op, solver):
     return None
 
 
-def solve_cycle(digits_in, ops):
-    """Solve a cycle given its digits and operators
+def solve_cycle(digits_in: List, ops: List[str]) -> List[int]:
+    """Solve a cycle given its digits and operators.
     Inputs
     ------
     - digits_in (list): list of initial digits (native ints) and placeholders "_"

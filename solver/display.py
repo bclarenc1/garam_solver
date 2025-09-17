@@ -5,13 +5,15 @@
 
 """Methods for displaying cycles and grids"""
 
+from typing import List
+
 NB_DIGITS = 44
 NB_OPS    = 20
 NB_DIGITS_PER_CYCLE = 10
 NB_OPS_PER_CYCLE    = 4
 VALID_NON_DIGITS = [" ", "_", "?", "X"]  # valid str values for digits
 
-def display_cycle(digits: list, ops: list, bool_print=True) -> str:
+def display_cycle(digits: List, ops: List[str], bool_print=True) -> str:
     """From the lists of digits and operators, display a cycle as:
     a1 $ b1 = c1
     $         $
@@ -52,7 +54,7 @@ def display_cycle(digits: list, ops: list, bool_print=True) -> str:
     return cycle_str
 
 
-def display_grid(digits: list, ops: list, bool_print=True) -> str:
+def display_grid(digits: List, ops: List[str], bool_print=True) -> str:
     """From the lists of digits and operators, display the full grid as:
     a1 $ b1 = c1        e1 $ f1 = g1
     $         $         $         $
@@ -127,16 +129,16 @@ def display_grid(digits: list, ops: list, bool_print=True) -> str:
     return grid_str
 
 
-def display_init_and_sol(init_digits: list, solved_digits: list, ops: list, scope="grid") -> str:
+def display_init_and_sol(digits_in: List, digits_out: List[int], ops: List[str], scope="grid") -> None:
     """Display the initial cycle or grid along with its solution"""
 
     if scope == "grid":
-        str_init   = display_grid(init_digits,   ops, False)
-        str_solved = display_grid(solved_digits, ops, False)
+        str_init   = display_grid(digits_in,  ops, False)
+        str_solved = display_grid(digits_out, ops, False)
         offset = 14
     elif scope == "cycle":
-        str_init   = display_cycle(init_digits,   ops, False)
-        str_solved = display_cycle(solved_digits, ops, False)
+        str_init   = display_cycle(digits_in,  ops, False)
+        str_solved = display_cycle(digits_out, ops, False)
         offset = 6
     else:
         print("'scope' must be either 'grid' or 'cycle'. Abort'")
@@ -156,17 +158,3 @@ def display_init_and_sol(init_digits: list, solved_digits: list, ops: list, scop
         print(row_colored)
 
     return None
-
-
-# quick tests
-if __name__ == "__main__":
-    _ = "_"
-    cycle_init_digits   = [_,1,7,_,_,1,3,_,2,_]
-    cycle_solved_digits = [8,1,7,9,5,1,3,7,2,5]
-    cycle_ops           = ["-","+","*","-"]
-    display_init_and_sol(cycle_init_digits, cycle_solved_digits, cycle_ops, scope="cycle")
-
-    grid_init_digits   = [_,3,_,_,_,_,5,_,1,_,6,_,_,_,_,_,_,_,_,_,_,1,4,_,_,_,_,_,_,_,_,4,_,7,_,_,2,_,_,4,_,_,_,_]
-    grid_solved_digits = [7,3,4,9,0,9,5,9,1,9,6,3,3,8,1,5,1,6,1,4,5,1,4,9,2,7,5,0,5,8,9,4,5,7,7,1,2,3,2,4,6,5,1,5]
-    grid_ops           = ["-","-","*","*","*","+","*","+","+","+","-","-","+","*","+","*","*","-","+","*"]
-    display_init_and_sol(grid_init_digits, grid_solved_digits, grid_ops, scope="grid")

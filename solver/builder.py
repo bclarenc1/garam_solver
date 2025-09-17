@@ -6,6 +6,7 @@
 
 """Methods for building cycles and grids"""
 
+from typing import List, Tuple
 import tkinter as tk
 
 # Main window
@@ -24,22 +25,29 @@ PAD_OPE_X, PAD_OPE_Y = 3, 5
 PAD_EQL_X, PAD_EQL_Y = 5, 5
 OPE_ENUM = ["+", "-", "*"]
 
-def make_label(text="="):
-    """Create a new label widget (cannot use one multiple times)"""
+def make_label(text="=") -> tk.Label:
+    """Create a new label widget."""
     return tk.Label(root, text=text, font=("Arial", 14))
 
 
-def check_valid_input(val):
-    """Check if input is either a single digit or an empty string"""
+def check_valid_input(val) -> bool:
+    """Return true iff input is either a single digit or an empty string."""
     return (val == "") or (val.isdigit() and len(val) == 1)
 
 
 valid_cmd = (root.register(check_valid_input), "%P")
 
-def build_cycle():
-    """Generate the HMI for user to enter inputs"""
+def build_cycle() -> Tuple[List, List[str]]:
+    """Generate the HMI for user to enter inputs.
 
-    root.title("Single-cycle Garam Pog")
+    Output
+    ------
+    A 2-element tuple made of:
+    - digits (list)  : list of inputs digits (ints) or placeholders "_"
+    - ops (list[str]): list of input operators ("+", "-" or "*")
+    """
+
+    root.title("Single-cycle Garam")
 
     # Containers for user entries
     txtbox_a1  = tk.Entry(root, width=2, justify="center", bg=DGT_BG, validate="key", validatecommand=valid_cmd)
@@ -90,7 +98,7 @@ def build_cycle():
     txtbox_c4.grid(   row=crow, column=4, padx=PAD_DGT_X, pady=PAD_DGT_Y)
     crow += 1
 
-    def get_values():
+    def get_values() -> None:
         """Store input values"""
         for txtbox in txtboxes:
             digit = txtbox.get().strip()
@@ -106,14 +114,10 @@ def build_cycle():
 
 
     # OK button
-    btn_OK = tk.Button(root, text="OK", justify="right", command=get_values)
+    btn_OK = tk.Button(root, text="Solve", justify="right", command=get_values)
     btn_OK.grid(row=crow, column=0, columnspan=5)
 
     # Display window
     root.mainloop()
 
     return (digits, ops)
-
-
-if __name__ == "__main__":
-    build_cycle()
