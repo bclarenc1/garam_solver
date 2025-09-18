@@ -1,6 +1,4 @@
 # Garam solver
-🚧 Work in progress — not fully functional yet 🚧
-
 This tool is designed to solve any <a href="https://www.garamgame.com/garam/garam_en_ligne/master/index.html">Garam grid ↗</a>.
 
 Garam is a numerical crossword-style puzzle: fill in the 44 cells so that all 20 arithmetic expressions are simultaneously correct.
@@ -20,7 +18,7 @@ Garam is a numerical crossword-style puzzle: fill in the 44 cells so that all 20
 
 Notes:
 - Step 2 is tedious. In the future, a screenshot or a URL _may_ be used to auto-fill the grid instead of manually entering about 30 values.
-- In step 3, you may instead enter ```python garam_solver.py --mini``` to play with a mini-Garam (20% of a full grid).
+- In step 3, you may instead enter ```python garam_solver.py --mini``` to play with a mini-Garam (20 % of a full grid).
 
 # OK, but what was the point of this?
 Well, I could not find any solver for this (addictive) game, so I made this.
