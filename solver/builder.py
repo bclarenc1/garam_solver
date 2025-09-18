@@ -3,7 +3,6 @@
 # pylint: disable=invalid-name
 # pylint: disable=line-too-long
 
-
 """Methods for building cycles and grids"""
 
 from typing import List, Tuple

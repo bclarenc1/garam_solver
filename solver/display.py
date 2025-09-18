@@ -2,7 +2,6 @@
 # pylint: disable=line-too-long
 # pylint: disable=invalid-name
 
-
 """Methods for displaying cycles and grids"""
 
 from typing import List
@@ -22,7 +21,6 @@ def display_cycle(digits: List, ops: List[str], bool_print=True) -> str:
     a3        c3
     a4 $ b4 = c4
     """
-
     # 0. Sanity checks
     assert len(digits) == NB_DIGITS_PER_CYCLE, \
            f"Invalid number of digits: expected {NB_DIGITS_PER_CYCLE}, got {len(digits)}"
@@ -72,7 +70,6 @@ def display_grid(digits: List, ops: List[str], bool_print=True) -> str:
     a8        c8        e8        g8
     a9 $ b9 = c9        e9 $ f9 = g9
     """
-
     # 0. Sanity checks
     assert len(digits) == NB_DIGITS, \
            f"Invalid number of digits: expected {NB_DIGITS}, got {len(digits)}"
@@ -130,8 +127,7 @@ def display_grid(digits: List, ops: List[str], bool_print=True) -> str:
 
 
 def display_init_and_sol(digits_in: List, digits_out: List[int], ops: List[str], scope="grid") -> None:
-    """Display the initial cycle or grid along with its solution"""
-
+    """Display the initial cycle or grid along with its solution."""
     if scope == "grid":
         str_init   = display_grid(digits_in,  ops, False)
         str_solved = display_grid(digits_out, ops, False)
@@ -149,7 +145,7 @@ def display_init_and_sol(digits_in: List, digits_out: List[int], ops: List[str],
     RED = "\033[91m"
     YLW = "\033[93m"
 
-    print("\n" + " "*offset + "Puzzle" + " "*28 + "Solution")
+    print("\n" + " "*offset + "Puzzle" + " "*13 + "->" + " "*13 + "Solution")
     for row_i, row_s in zip(str_init.splitlines(), str_solved.splitlines()):
         row_out = f"{row_i.ljust(35)} {row_s}"
         row_colored = row_out.replace("=", f"{BLD}={DEF}").replace("_", f"{RED}_{DEF}")\
