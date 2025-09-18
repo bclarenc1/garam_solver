@@ -1,7 +1,1 @@
 z3-solver
-
-pytest
-ipython
-ipykernel
-
-#google-cloud-storage
