@@ -2,24 +2,55 @@
 # pylint: disable=line-too-long
 # pylint: disable=invalid-name
 
-"""Methods for displaying cycles and grids"""
+"""Methods for displaying Garam cycles and grids.
+
+This module provides utilities for rendering Garam puzzles (cycles or full grids)
+in a textual format suitable for terminal output. It can also display the initial
+puzzle alongside its solved version with color highlighting.
+"""
 
 from typing import List
 
+from .constants import VALID_OPS
+
 NB_DIGITS = 44
-NB_OPS    = 20
+NB_OPS = 20
 NB_DIGITS_PER_CYCLE = 10
-NB_OPS_PER_CYCLE    = 4
+NB_OPS_PER_CYCLE = 4
 VALID_NON_DIGITS = [" ", "_", "?", "X"]  # valid str values for digits
 
 def display_cycle(digits: List, ops: List[str], bool_print=True) -> str:
-    """From the lists of digits and operators, display a cycle as:
+    """Render a cycle as a formatted multiline string.
+
+    The cycle is composed of 4 arithmetical statements arranged in a loop:
+    ```
     a1 $ b1 = c1
     $         $
     a2        c2
     =         =
     a3        c3
     a4 $ b4 = c4
+    ```
+    where $ in an operator.
+
+    Parameters
+    ----------
+    digits : list
+        List of 10 digits or placeholders representing the puzzle state.
+    ops : list of str
+        List of 4 operators among ``"+", "-", "*"``.
+    bool_print : bool, optional
+        If True, the formatted cycle is printed to stdout. Default is True.
+
+    Returns
+    -------
+    str
+        Multiline string representation of the cycle.
+
+    Raises
+    ------
+    AssertionError
+        If the number or type of digits/operators is invalid.
     """
     # 0. Sanity checks
     assert len(digits) == NB_DIGITS_PER_CYCLE, \
@@ -30,7 +61,7 @@ def display_cycle(digits: List, ops: List[str], bool_print=True) -> str:
     assert len(ops) == NB_OPS_PER_CYCLE, \
            f"Invalid number of operators: expected {NB_OPS_PER_CYCLE}, got {len(ops)}"
     ops = [o.strip() for o in ops]
-    invalid_ops = [o for o in ops if o not in ("+", "-", "*")]
+    invalid_ops = [o for o in ops if o not in VALID_OPS]
     assert not invalid_ops, f"Invalid operator(s): {invalid_ops}"
 
     # 1. Extract digits and operators
@@ -53,7 +84,10 @@ def display_cycle(digits: List, ops: List[str], bool_print=True) -> str:
 
 
 def display_grid(digits: List, ops: List[str], bool_print=True) -> str:
-    """From the lists of digits and operators, display the full grid as:
+    """Render a full grid as a formatted multiline string.
+
+    The grid is composed of 20 arithmetical statements arranged in loops:
+    ```
     a1 $ b1 = c1        e1 $ f1 = g1
     $         $         $         $
     a2        c2 $ d2 = e2        g2
@@ -69,6 +103,27 @@ def display_grid(digits: List, ops: List[str], bool_print=True) -> str:
     =         =         =         =
     a8        c8        e8        g8
     a9 $ b9 = c9        e9 $ f9 = g9
+    ```
+    where $ in an operator.
+
+    Parameters
+    ----------
+    digits : list
+        List of 44 digits or placeholders representing the puzzle state.
+    ops : list of str
+        List of 4 operators among ``"+", "-", "*"``.
+    bool_print : bool, optional
+        If True, the formatted cycle is printed to stdout. Default is True.
+
+    Returns
+    -------
+    str
+        Multiline string representation of the grid.
+
+    Raises
+    ------
+    AssertionError
+        If the number or type of digits/operators is invalid.
     """
     # 0. Sanity checks
     assert len(digits) == NB_DIGITS, \
@@ -127,7 +182,27 @@ def display_grid(digits: List, ops: List[str], bool_print=True) -> str:
 
 
 def display_init_and_sol(digits_in: List, digits_out: List[int], ops: List[str], scope="grid") -> None:
-    """Display the initial cycle or grid along with its solution."""
+    """Display a puzzle alongside its solved version.
+
+    The two representations are printed side by side, with color
+    highlighting to differentiate elements.
+
+    Parameters
+    ----------
+    digits_in : list
+        Initial digits or placeholders of the puzzle.
+    digits_out : list of int
+        Solved digits corresponding to the same positions.
+    ops : list of str
+        List of operators used in the puzzle.
+    scope : {'grid', 'cycle'}, optional
+        Type of puzzle to display. Default is ``"grid"``.
+
+    Returns
+    -------
+    None
+        The comparison is printed directly to the terminal.
+    """
     if scope == "grid":
         str_init   = display_grid(digits_in,  ops, False)
         str_solved = display_grid(digits_out, ops, False)
