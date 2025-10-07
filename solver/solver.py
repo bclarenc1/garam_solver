@@ -24,10 +24,10 @@ def add_expression_constraint(digits: List, op: str, solver: Solver) -> None:
     Parameters
     ----------
     digits : list of z3.IntRef
-        Z3 integer variables representing the digits of the expression.
+        Z3 integer variables representing the digits of the equation.
         Must contain either 3 or 4 elements.
     op : str
-        Arithmetic operator, among ``"+"``, ``"-"`` and ``"*"``
+        Arithmetic operator, among ``"+"``, ``"-"``, ``"*"``
     solver : z3.Solver
         The Z3 solver where the constraint will be added.
 
@@ -41,8 +41,8 @@ def add_expression_constraint(digits: List, op: str, solver: Solver) -> None:
     None
         The constraint is added directly to the provided solver.
     """
-    assert len(digits) in [3,4], "Invalid digits in expression constraint"
-    assert op in VALID_OPS, f"Invalid operator {op} in expression constraint"
+    assert len(digits) in [3,4], "Invalid digits in equation constraint"
+    assert op in VALID_OPS, f"Invalid operator {op} in equation constraint"
 
     lhs = digits[-1] if (len(digits) == 3) else 10*digits[-2] + digits[-1]
     if op == "+":
