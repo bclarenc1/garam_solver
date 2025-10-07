@@ -3,23 +3,43 @@
 # pylint: disable=too-many-locals
 # pylint: disable=line-too-long
 
-"""Methods for solving cycles and grids"""
+"""
+Methods for solving Garam puzzles (cycles and full grids) using Z3.
+
+This module defines helper functions to translate Garam constraints into Z3 formulas and solve them.
+"""
 
 from typing import List
 from z3 import Int, Solver, sat
 
-VALID_OPS = ["+", "-", "*"]
+from .constants import VALID_OPS
 
 def add_expression_constraint(digits: List, op: str, solver: Solver) -> None:
-    """Create a constraint on an expression.
-    The expression is either "a $ b = c" or "a $ b = cd",
-    where $ is the operator and cd is a 2-digit int.
+    """Add an arithmetic constraint of the form ``a $ b = c`` or ``a $ b = cd``.
 
-    Inputs
+    The function encodes one equation of the puzzle in the Z3 solver.
+    The right-hand side may be a one- or two-digit number depending on the
+    length of ``digits``.
+
+    Parameters
+    ----------
+    digits : list of z3.IntRef
+        Z3 integer variables representing the digits of the expression.
+        Must contain either 3 or 4 elements.
+    op : str
+        Arithmetic operator, among ``"+"``, ``"-"`` and ``"*"``
+    solver : z3.Solver
+        The Z3 solver where the constraint will be added.
+
+    Raises
     ------
-    - digits (list)  : list of 3 or 4 Z3 Ints
-    - op     (str)   : "+", "-" or "*"
-    - solver (Solver): Z3 solver to store the constraint
+    AssertionError
+        If the number of digits is not 3 or 4, or if the operator is invalid.
+
+    Returns
+    -------
+    None
+        The constraint is added directly to the provided solver.
     """
     assert len(digits) in [3,4], "Invalid digits in expression constraint"
     assert op in VALID_OPS, f"Invalid operator {op} in expression constraint"
@@ -36,18 +56,28 @@ def add_expression_constraint(digits: List, op: str, solver: Solver) -> None:
 
 
 def solve_cycle(digits_in: List, ops: List[str], bool_print=False) -> List[int]:
-    """Solve a cycle given its digits and operators.
+    """Solve a single Garam cycle (a.k.a. mini-Garam).
 
-    Inputs
-    ------
-    - digits_in (list):  list of initial digits (native ints) and placeholders "_"
-    - ops (list [str]):  list of operators (among "+", "-", "*")
-    - bool_print (bool): if True, display all digit values. Default is False
+    The cycle is defined by 4 equations arranged in a loop.
+    Each placeholder ``"_"`` in ``digits_in`` represents an unknown digit
+    that will be solved for.
 
-    Output
-    ------
-    - digits_in (list): list of digits that solve the puzzle, or empty list if
-                        no solution is found
+    Parameters
+    ----------
+    digits_in : list
+        List of 10 input digits and placeholders ``"_"``.
+        The order must follow the internal variable layout:
+        ``[a1, b1, c1, a2, c2, a3, c3, a4, b4, c4]``.
+    ops : list of str
+        List of 4 arithmetic operators (among ``"+", "-", "*"``),
+        defining each equation of the cycle.
+    bool_print : bool, optional
+        If True, print all variable assignments after solving. Default is False.
+
+    Returns
+    -------
+    list of int
+        List of solved digits, or an empty list if no solution is found.
     """
     # 1. Z3 variables
     zsolver = Solver()
@@ -92,17 +122,31 @@ def solve_cycle(digits_in: List, ops: List[str], bool_print=False) -> List[int]:
 
 
 def solve_grid(digits_in: List, ops: List[str], bool_print=False) -> List[int]:
-    """Solve a cycle given its digits and operators.
-    Inputs
-    ------
-    - digits_in (list):  list of initial digits (native ints) and placeholders "_"
-    - ops (list [str]):  list of operators (among "+", "-", "*")
-    - bool_print (bool): if True, display all digit values. Default is False
+    """Solve a full Garam grid.
 
-    Output
-    ------
-    - digits_in (list): list of digits that solve the puzzle, or empty list if
-                        no solution is found
+    The full grid is made of 4 interconnected cycles, each with
+    horizontal and vertical equations sharing digits at 2 intersections.
+    Each placeholder ``"_"`` in ``digits_in`` represents an unknown digit
+    that will be solved for.
+
+    Parameters
+    ----------
+    digits_in : list
+        List of 44 input digits and placeholders ``"_"``.
+        The order must follow the internal variable layout:
+        ``[a1, b1, c1, e1, f1, g1, a2, c2, d2, e2, g2, a3, c3, e3, g3,
+           a4, b4, c4, e4, f4, g4, b5, f5, a6, b6, c6, e6, f6, g6, a7,
+           c7, d7, e7, g7, a8, c8, e8, g8, a9, b9, c9, e9, f9, g9]``.
+    ops : list of str
+        List of 20 arithmetic operators (among ``"+", "-", "*"``),
+        defining each equation of the cycle.
+    bool_print : bool, optional
+        If True, print all variable assignments after solving. Default is False.
+
+    Returns
+    -------
+    list of int
+        List of solved digits, or an empty list if no solution is found.
     """
     # 1. Z3 variables
     zsolver = Solver()

@@ -3,10 +3,40 @@
 # pylint: disable=invalid-name
 # pylint: disable=line-too-long
 
-"""Methods for building cycles and grids"""
+"""
+Builder module for Garam solver GUI input forms.
+
+This module defines functions to dynamically construct Tkinter interfaces
+used to input either a full Garam grid or a single "mini-Garam" cycle.
+Each entry widget captures digits and operators forming the puzzle structure.
+
+The resulting lists of digits and operators are returned for further
+processing by the solver module.
+
+Modules
+-------
+tkinter : Used for creating the graphical interface.
+
+Functions
+---------
+build_cycle() -> Tuple[List, List[str]]
+    Launch the UI to enter a mini-Garam (cycle) puzzle.
+build_grid() -> Tuple[List, List[str]]
+    Launch the UI to enter a full Garam grid.
+make_digit_entry() -> tk.Entry
+    Create and configure a new Entry widget for digit input.
+make_operator() -> tk.StringVar
+    Create a new operator selector variable (bound to an OptionMenu).
+make_label(text="=") -> tk.Label
+    Create a label widget, typically displaying "=".
+check_valid_input(val) -> bool
+    Validate digit inputs to ensure single-digit or empty string.
+"""
 
 from typing import List, Tuple
 import tkinter as tk
+
+from .constants import VALID_OPS
 
 # Main window
 root = tk.Tk()
@@ -15,14 +45,13 @@ root = tk.Tk()
 digits = []
 ops    = []
 
-# Constants
+# Constants: graphical and operators
 DGT_BG = "#ffffff"
 OPE_BG = "#cce5ff"
 DGT_BOX_WIDTH = 2
 PAD_DGT_X, PAD_DGT_Y = 5, 5
 PAD_OPE_X, PAD_OPE_Y = 3, 5
 PAD_EQL_X, PAD_EQL_Y = 5, 5
-OPE_ENUM = ["+", "-", "*"]
 
 
 def check_valid_input(val) -> bool:
@@ -33,48 +62,55 @@ valid_cmd = (root.register(check_valid_input), "%P")
 
 
 def make_digit_entry() -> tk.Entry:
-    """Create a new digit entry widget."""
+    """Create and return a new digit entry widget."""
     return tk.Entry(root, width=2, justify="center", bg=DGT_BG, validate="key", validatecommand=valid_cmd)
 
 
 def make_operator() -> tk.StringVar:
-    """Create a new operator widget for."""
-    return tk.StringVar(value=OPE_ENUM[0])
+    """Create and return a new operator variable for OptionMenu."""
+    return tk.StringVar(value=VALID_OPS[0])
 
 
 def make_label(text="=") -> tk.Label:
-    """Create a new label widget."""
+    """Create and return a label widget."""
     return tk.Label(root, text=text, font=("Arial", 14))
 
 
 def build_cycle() -> Tuple[List, List[str]]:
-    """Generate the HMI for user to enter cycle inputs.
+    """Create and display the UI for entering a single cycle.
 
-    Output
-    ------
-    A 2-element tuple made of:
-    - digits (list)  : list of inputs digits (ints) or placeholders "_"
-    - ops (list[str]): list of input operators ("+", "-" or "*")
+    The layout allows the user to enter single-digit values and select
+    operators between them. When the user validates the form, the input
+    values and operators are collected and returned.
+
+    Returns
+    -------
+    tuple of list and list[str]
+        A tuple containing:
+        - digits : list
+            Input digits as integers or placeholders "_".
+        - ops : list of str
+            Selected operators ("+", "-", "*").
     """
     root.title("Mini-Garam")
 
     # Containers for user entries
     txtbox_a1  = make_digit_entry()
     cbbox_oab1 = make_operator()
-    box_oab1   = tk.OptionMenu(root, cbbox_oab1, *OPE_ENUM)
+    box_oab1   = tk.OptionMenu(root, cbbox_oab1, *VALID_OPS)
     txtbox_b1  = make_digit_entry()
     txtbox_c1  = make_digit_entry()
     cbbox_oa12 = make_operator()
-    box_oa12   = tk.OptionMenu(root, cbbox_oa12, *OPE_ENUM)
+    box_oa12   = tk.OptionMenu(root, cbbox_oa12, *VALID_OPS)
     cbbox_oc12 = make_operator()
-    box_oc12   = tk.OptionMenu(root, cbbox_oc12, *OPE_ENUM)
+    box_oc12   = tk.OptionMenu(root, cbbox_oc12, *VALID_OPS)
     txtbox_a2  = make_digit_entry()
     txtbox_c2  = make_digit_entry()
     txtbox_a3  = make_digit_entry()
     txtbox_c3  = make_digit_entry()
     txtbox_a4  = make_digit_entry()
     cbbox_oab4 = make_operator()
-    box_oab4   = tk.OptionMenu(root, cbbox_oab4, *OPE_ENUM)
+    box_oab4   = tk.OptionMenu(root, cbbox_oab4, *VALID_OPS)
     txtbox_b4  = make_digit_entry()
     txtbox_c4  = make_digit_entry()
     txtboxes = [txtbox_a1, txtbox_b1, txtbox_c1, txtbox_a2, txtbox_c2, txtbox_a3, txtbox_c3, txtbox_a4, txtbox_b4, txtbox_c4]
@@ -108,7 +144,7 @@ def build_cycle() -> Tuple[List, List[str]]:
     crow += 1
 
     def get_values() -> None:
-        """Store input values."""
+        """Store input values from the GUI."""
         for txtbox in txtboxes:
             digit = txtbox.get().strip()
             if digit == "":
@@ -133,41 +169,48 @@ def build_cycle() -> Tuple[List, List[str]]:
 
 
 def build_grid() -> Tuple[List, List[str]]:
-    """Generate the HMI for user to enter grid inputs.
+    """Create and display the UI for entering a full grid.
 
-    Output
-    ------
-    A 2-element tuple made of:
-    - digits (list)  : list of inputs digits (ints) or placeholders "_"
-    - ops (list[str]): list of input operators ("+", "-" or "*")
+    The layout allows the user to enter single-digit values and select
+    operators between them. When the user validates the form, the input
+    values and operators are collected and returned.
+
+    Returns
+    -------
+    tuple of list and list[str]
+        A tuple containing:
+        - digits : list
+            Input digits as integers or placeholders "_".
+        - ops : list of str
+            Selected operators ("+", "-", "*").
     """
     root.title("Full grid Garam")
 
     # Containers for user entries
     txtbox_a1  = make_digit_entry()
     cbbox_oab1 = make_operator()
-    box_oab1   = tk.OptionMenu(root, cbbox_oab1, *OPE_ENUM)
+    box_oab1   = tk.OptionMenu(root, cbbox_oab1, *VALID_OPS)
     txtbox_b1  = make_digit_entry()
     txtbox_c1  = make_digit_entry()
     txtbox_e1  = make_digit_entry()
     cbbox_oef1 = make_operator()
-    box_oef1   = tk.OptionMenu(root, cbbox_oef1, *OPE_ENUM)
+    box_oef1   = tk.OptionMenu(root, cbbox_oef1, *VALID_OPS)
     txtbox_f1  = make_digit_entry()
     txtbox_g1  = make_digit_entry()
 
     cbbox_oa12 = make_operator()
-    box_oa12   = tk.OptionMenu(root, cbbox_oa12, *OPE_ENUM)
+    box_oa12   = tk.OptionMenu(root, cbbox_oa12, *VALID_OPS)
     cbbox_oc12 = make_operator()
-    box_oc12   = tk.OptionMenu(root, cbbox_oc12, *OPE_ENUM)
+    box_oc12   = tk.OptionMenu(root, cbbox_oc12, *VALID_OPS)
     cbbox_oe12 = make_operator()
-    box_oe12   = tk.OptionMenu(root, cbbox_oe12, *OPE_ENUM)
+    box_oe12   = tk.OptionMenu(root, cbbox_oe12, *VALID_OPS)
     cbbox_og12 = make_operator()
-    box_og12   = tk.OptionMenu(root, cbbox_og12, *OPE_ENUM)
+    box_og12   = tk.OptionMenu(root, cbbox_og12, *VALID_OPS)
 
     txtbox_a2  = make_digit_entry()
     txtbox_c2  = make_digit_entry()
     cbbox_ocd2 = make_operator()
-    box_ocd2   = tk.OptionMenu(root, cbbox_ocd2, *OPE_ENUM)
+    box_ocd2   = tk.OptionMenu(root, cbbox_ocd2, *VALID_OPS)
     txtbox_d2  = make_digit_entry()
     txtbox_e2  = make_digit_entry()
     txtbox_g2  = make_digit_entry()
@@ -179,47 +222,47 @@ def build_grid() -> Tuple[List, List[str]]:
 
     txtbox_a4  = make_digit_entry()
     cbbox_oab4 = make_operator()
-    box_oab4   = tk.OptionMenu(root, cbbox_oab4, *OPE_ENUM)
+    box_oab4   = tk.OptionMenu(root, cbbox_oab4, *VALID_OPS)
     txtbox_b4  = make_digit_entry()
     txtbox_c4  = make_digit_entry()
     txtbox_e4  = make_digit_entry()
     cbbox_oef4 = make_operator()
-    box_oef4   = tk.OptionMenu(root, cbbox_oef4, *OPE_ENUM)
+    box_oef4   = tk.OptionMenu(root, cbbox_oef4, *VALID_OPS)
     txtbox_f4  = make_digit_entry()
     txtbox_g4  = make_digit_entry()
 
     cbbox_ob45 = make_operator()
-    box_ob45   = tk.OptionMenu(root, cbbox_ob45, *OPE_ENUM)
+    box_ob45   = tk.OptionMenu(root, cbbox_ob45, *VALID_OPS)
     cbbox_of45 = make_operator()
-    box_of45   = tk.OptionMenu(root, cbbox_of45, *OPE_ENUM)
+    box_of45   = tk.OptionMenu(root, cbbox_of45, *VALID_OPS)
 
     txtbox_b5  = make_digit_entry()
     txtbox_f5  = make_digit_entry()
 
     txtbox_a6  = make_digit_entry()
     cbbox_oab6 = make_operator()
-    box_oab6   = tk.OptionMenu(root, cbbox_oab6, *OPE_ENUM)
+    box_oab6   = tk.OptionMenu(root, cbbox_oab6, *VALID_OPS)
     txtbox_b6  = make_digit_entry()
     txtbox_c6  = make_digit_entry()
     txtbox_e6  = make_digit_entry()
     cbbox_oef6 = make_operator()
-    box_oef6   = tk.OptionMenu(root, cbbox_oef6, *OPE_ENUM)
+    box_oef6   = tk.OptionMenu(root, cbbox_oef6, *VALID_OPS)
     txtbox_f6  = make_digit_entry()
     txtbox_g6  = make_digit_entry()
 
     cbbox_oa67 = make_operator()
-    box_oa67   = tk.OptionMenu(root, cbbox_oa67, *OPE_ENUM)
+    box_oa67   = tk.OptionMenu(root, cbbox_oa67, *VALID_OPS)
     cbbox_oc67 = make_operator()
-    box_oc67   = tk.OptionMenu(root, cbbox_oc67, *OPE_ENUM)
+    box_oc67   = tk.OptionMenu(root, cbbox_oc67, *VALID_OPS)
     cbbox_oe67 = make_operator()
-    box_oe67   = tk.OptionMenu(root, cbbox_oe67, *OPE_ENUM)
+    box_oe67   = tk.OptionMenu(root, cbbox_oe67, *VALID_OPS)
     cbbox_og67 = make_operator()
-    box_og67   = tk.OptionMenu(root, cbbox_og67, *OPE_ENUM)
+    box_og67   = tk.OptionMenu(root, cbbox_og67, *VALID_OPS)
 
     txtbox_a7  = make_digit_entry()
     txtbox_c7  = make_digit_entry()
     cbbox_ocd7 = make_operator()
-    box_ocd7   = tk.OptionMenu(root, cbbox_ocd7, *OPE_ENUM)
+    box_ocd7   = tk.OptionMenu(root, cbbox_ocd7, *VALID_OPS)
     txtbox_d7  = make_digit_entry()
     txtbox_e7  = make_digit_entry()
     txtbox_g7  = make_digit_entry()
@@ -231,12 +274,12 @@ def build_grid() -> Tuple[List, List[str]]:
 
     txtbox_a9  = make_digit_entry()
     cbbox_oab9 = make_operator()
-    box_oab9   = tk.OptionMenu(root, cbbox_oab9, *OPE_ENUM)
+    box_oab9   = tk.OptionMenu(root, cbbox_oab9, *VALID_OPS)
     txtbox_b9  = make_digit_entry()
     txtbox_c9  = make_digit_entry()
     txtbox_e9  = make_digit_entry()
     cbbox_oef9 = make_operator()
-    box_oef9   = tk.OptionMenu(root, cbbox_oef9, *OPE_ENUM)
+    box_oef9   = tk.OptionMenu(root, cbbox_oef9, *VALID_OPS)
     txtbox_f9  = make_digit_entry()
     txtbox_g9  = make_digit_entry()
 
@@ -363,7 +406,7 @@ def build_grid() -> Tuple[List, List[str]]:
     crow += 1
 
     def get_values() -> None:
-        """Store input values."""
+        """Store input values from the GUI."""
         for txtbox in txtboxes:
             digit = txtbox.get().strip()
             if digit == "":
