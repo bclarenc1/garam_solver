@@ -1,6 +1,3 @@
-# pylint: disable=line-too-long
-# pylint: disable=invalid-name
-
 """
 Main entry point for the Garam solver application.
 
@@ -22,38 +19,38 @@ Run the solver on a single cycle:
 
 Notes
 -----
-The solver reads a grid or cycle from user input and uses the internal
-modules under `solver/` to build, solve, and display the puzzle:
-`builder`, `solver`, and `display`.
+The solver reads a unsolved puzzle from user input and uses the internal
+modules under ``solver/`` to build, solve, and display the puzzle:
+``builder``, ``solver``, and ``display``.
 
 Modules
 -------
-builder : Functions to build the grid or cycle from user input.
-solver  : Core solving algorithms for grids and cycles.
+builder : Functions to build the puzzle from user input.
+solver  : Core solving algorithm.
 display : Utilities to render puzzles and their solutions.
 
 @author:  Benjamin Clarenc
-@date:    2025-10-07
+@date:    2025-10-09
 @github:  bclarenc1
 """
 
-import textwrap
 import argparse
 import sys
+import textwrap
 
-from solver.builder import build_cycle, build_grid
-from solver.solver import solve_cycle, solve_grid
-from solver.display import display_init_and_sol, display_cycle, display_grid
+from solver.builder import build_puzzle
+from solver.solver import solve_puzzle
+from solver.display import display_init_and_sol, display_puzzle
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description=textwrap.dedent("""
-            Solves a full Garam grid or a single cycle (a.k.a. 'mini-Garam') that has been inputed.
+            Solves a full Garam grid or a single cycle (a.k.a. "mini-Garam") that has been inputed.
             The puzzle and its solution are displayed in the terminal.
-            Grids can be found e.g. on the official website, like
+            Garam grids can be found on the official website:
             https://www.garamgame.com/garam/garam_en_ligne/avance/index.html"""),
         formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("-m", "--mini", action="store_true", dest="use_cycle",
+    parser.add_argument("-m", "--mini", action="store_true", dest="is_cycle",
                         help="input a single cycle instead of a full grid")
     parser.epilog = textwrap.dedent(f"""\
         examples:
@@ -61,24 +58,17 @@ if __name__ == "__main__":
           python {parser.prog} --mini -> input a single cycle""")
 
     args = parser.parse_args()
+    shape = "cycle" if args.is_cycle else "grid"  # pylint: disable=invalid-name
 
-    if args.use_cycle:
-        scope = "cycle"
-        digits_in, ops = build_cycle()
-        if not digits_in or not ops:
-            # user closed the window :(
-            sys.exit(0)
-        digits_out = solve_cycle(digits_in, ops)
-    else:
-        scope = "grid"
-        digits_in, ops = build_grid()
-        if not digits_in or not ops:
-            sys.exit(0)
-        digits_out = solve_grid(digits_in, ops)
+    digits_in, ops = build_puzzle(shape)
+    if not digits_in or not ops:
+        # user closed the window :(
+        sys.exit(0)
+
+    digits_out = solve_puzzle(shape, digits_in, ops)
 
     if digits_out:
-        display_init_and_sol(digits_in, digits_out, ops, scope=scope)
-    elif args.use_cycle:
-        display_cycle(digits_in, ops)
+        display_init_and_sol(shape, digits_in, digits_out, ops)
     else:
-        display_grid(digits_in, ops)
+        # No solution found, display the initial puzzle anyway
+        display_puzzle(shape, digits_in, ops)
